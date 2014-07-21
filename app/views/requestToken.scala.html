@@ -1,4 +1,4 @@
-@(params: Map[String, String])
+@(request: com.hunorkovacs.koauth.domain.Request)(filledForm: Form[com.hunorkovacs.koauth.domain.Request])
 
 @import com.hunorkovacs.koauth.domain.OauthParams._
 @import com.hunorkovacs.koauth.domain.Request
@@ -12,52 +12,56 @@
         <title>Request Token</title>
     </head>
     <body>
-        @(requestTokenForm: Form[Request])
-
-        @helper.form(action = routes.Application.requestToken) {
-            @helper.inputText(loginForm(consumerKeyName))
+        @helper.form(action = routes.Application.requestTokenPost) {
+            @helper.inputText(filledForm("method"))
+            @helper.inputText(filledForm("url"))
+            @helper.inputText(filledForm(consumerKeyName))
+            @helper.inputText(filledForm(consumerSecretName))
+            @helper.input(filledForm("submit")) { (id, name, value, args) =>
+                <input type="submit" name="submit" id="submit" @toHtmlArgs(args)>
+            }
         }
 
 
-        <form action="request-token">
-        <h1>Request Token call</h1>
-        <table>
-            <tr>
-                <td>Method:</td>
-                <td><input name="method" value="POST" disabled/></td>
-            </tr>
-            <tr>
-                <td>Url:</td>
-                <td><input name="url" value=""/></td>
-            </tr>
-            <tr>
-                <td>Consumer Key:</td>
-                <td><input name="consumer-key" value=""/></td>
-            </tr>
-            <tr>
-                <td>Consumer Secret:</td>
-                <td><input name="consumer-secret" value=""/></td>
-            </tr>
-            <tr>
-                <td>Timestamp:</td>
-                <td><input name="timestamp" value="" disabled/></td>
-            </tr>
-            <tr>
-                <td>Nonce:</td>
-                <td><input name="nonce" value="@params.applyOrElse("oauth_nonce", (s: String) => "")" disabled/></td>
-            </tr>
-            <tr>
-                <td>Version:</td>
-                <td><input name="version" value="1.0" disabled/></td>
-            </tr>
-        </table>
+        @*<form action="request-token">*@
+        @*<h1>Request Token call</h1>*@
+        @*<table>*@
+            @*<tr>*@
+                @*<td>Method:</td>*@
+                @*<td><input name="method" value="POST" disabled/></td>*@
+            @*</tr>*@
+            @*<tr>*@
+                @*<td>Url:</td>*@
+                @*<td><input name="url" value=""/></td>*@
+            @*</tr>*@
+            @*<tr>*@
+                @*<td>Consumer Key:</td>*@
+                @*<td><input name="consumer-key" value=""/></td>*@
+            @*</tr>*@
+            @*<tr>*@
+                @*<td>Consumer Secret:</td>*@
+                @*<td><input name="consumer-secret" value=""/></td>*@
+            @*</tr>*@
+            @*<tr>*@
+                @*<td>Timestamp:</td>*@
+                @*<td><input name="timestamp" value="" disabled/></td>*@
+            @*</tr>*@
+            @*<tr>*@
+                @*<td>Nonce:</td>*@
+                @*<td><input name="nonce" value="@params.applyOrElse("oauth_nonce", (s: String) => "")" disabled/></td>*@
+            @*</tr>*@
+            @*<tr>*@
+                @*<td>Version:</td>*@
+                @*<td><input name="version" value="1.0" disabled/></td>*@
+            @*</tr>*@
+        @*</table>*@
         @*<p>HTTP POST request body parameters:</p>*@
         @*<ol>*@
             @*<input name="post-0" value=""/>*@
             @*<input name="post-1" value=""/>*@
             @*<input name="post-2" value=""/>*@
         @*</ol>*@
-        <p><input type="submit" name="consumer-key" value="Submit"/></p>
-        </form>
+        @*<p><input type="submit" name="consumer-key" value="Submit"/></p>*@
+        @*</form>*@
     </body>
 </html>

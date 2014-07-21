@@ -13,14 +13,18 @@ object Application extends Controller {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-//  val filledForm = loginForm.fill(User("Bob", 18))
-
   def requestToken = Action.async { request =>
     Future {
-      val formData = requestTokenForm.bindFromRequest().get
-      
-      val l = List(("oauth_nonce", "123456"))
-      Ok(views.html.requestToken(l.toMap))
+      val emptyRequest = Request("", "", List.empty, List.empty, List.empty, Map.empty)
+      Ok(views.html.requestToken(emptyRequest)(requestTokenForm))
+    }
+  }
+
+  def requestTokenPost = Action.async { request =>
+    Future {
+      val requestTokenRequest = requestTokenForm.bindFromRequest()(request).get
+      val filledForm = requestTokenForm.fill(requestTokenRequest)
+      Ok(views.html.requestToken(requestTokenRequest)(filledForm))
     }
   }
 
@@ -36,7 +40,7 @@ object Application extends Controller {
   private def from(method: String, url: String, consumerKey: String, consumerSecret: String): Request = {
     val list = List((consumerKeyName, consumerKey),
       (consumerSecretName, consumerSecret))
-    Request("", "", List.empty, List.empty, list, list.toMap)
+    Request(method, url, List.empty, List.empty, list, list.toMap)
   }
 
   private def to(request: Request): Option[(String, String, String, String)] = {
