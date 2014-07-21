@@ -1,6 +1,8 @@
 @(params: Map[String, String])
 
-@import scala.concurrent.Future
+@import com.hunorkovacs.koauth.domain.OauthParams._
+@import views.html.helper
+@import controllers.Application.loginForm
 
 <!DOCTYPE html>
 
@@ -9,6 +11,13 @@
         <title>Request Token</title>
     </head>
     <body>
+        @(loginForm: Form[com.hunorkovacs.koauth.domain.Request])
+
+        @helper.form(action = routes.Application.requestToken) {
+            @helper.inputText(loginForm(consumerKeyName))
+        }
+
+
         <form action="request-token">
         <h1>Request Token call</h1>
         <table>
