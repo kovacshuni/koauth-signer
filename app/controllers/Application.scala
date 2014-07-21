@@ -7,49 +7,42 @@ import play.api.data.Forms._
 
 import scala.concurrent.Future
 import com.hunorkovacs.koauth.service.consumer.{DefaultConsumerService, ConsumerService}
+import com.hunorkovacs.koauth.domain.Request
 
 object Application extends Controller {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val requestTokenForm = Form(
+//  val filledForm = loginForm.fill(User("Bob", 18))
+
+  def requestToken = Action.async { request =>
+    Future {
+      val formData = requestTokenForm.bindFromRequest().get
+      
+      val l = List(("oauth_nonce", "123456"))
+      Ok(views.html.requestToken(l.toMap))
+    }
+  }
+
+  val requestTokenForm = Form[Request](
     mapping(
       "method" -> text,
       "url" -> text,
       consumerKeyName -> text,
-      consumerSecretName -> text,
-      timestampName -> text,
-      nonceName -> text,
-      signatureName -> text,
-      signatureMethodName -> text,
-      versionName -> text
-    )(
-      (method,
-       url,
-       consumerKey,
-       consumerSecret,
-       timestamp,
-       nonce,
-       signature,
-       signatureMethod,
-       version,
-       _) =>
-        val l = List((consumerKeyName, consumerKey),
-          (consumerSecretName, consumerSecret))
-        val m = l.toMap
-        com.hunorkovacs.koauth.domain.Request(method, url, List.empty, List.empty, l, m)
-      (r: com.hunorkovacs.koauth.domain.Request) =>
-        Some(r.method, r.urlWithoutParams, r.urlParams, r.bodyParams, r.oauthParamsList, r.oauthParamsMap)
-    )
+      consumerSecretName -> text
+    )(from)(to)
+  )
 
-//  val filledForm = loginForm.fill(User("Bob", 18))
+  private def from(method: String, url: String, consumerKey: String, consumerSecret: String): Request = {
+    val list = List((consumerKeyName, consumerKey),
+      (consumerSecretName, consumerSecret))
+    Request("", "", List.empty, List.empty, list, list.toMap)
+  }
 
-  def requestToken = Action.async { request =>
-//    DefaultConsumerService.createRequestTokenRequest()
-
-    Future {
-      val l = List(("oauth_nonce", "123456"))
-      Ok(views.html.requestToken(l.toMap))
-    }
+  private def to(request: Request): Option[(String, String, String, String)] = {
+    Some(request.method,
+      request.urlWithoutParams,
+      request.oauthParamsMap(consumerKeyName),
+      request.oauthParamsMap(consumerSecretName))
   }
 }

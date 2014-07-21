@@ -1,8 +1,9 @@
 @(params: Map[String, String])
 
 @import com.hunorkovacs.koauth.domain.OauthParams._
+@import com.hunorkovacs.koauth.domain.Request
 @import views.html.helper
-@import controllers.Application.loginForm
+@import controllers.Application.requestTokenForm
 
 <!DOCTYPE html>
 
@@ -11,7 +12,7 @@
         <title>Request Token</title>
     </head>
     <body>
-        @(loginForm: Form[com.hunorkovacs.koauth.domain.Request])
+        @(requestTokenForm: Form[Request])
 
         @helper.form(action = routes.Application.requestToken) {
             @helper.inputText(loginForm(consumerKeyName))
