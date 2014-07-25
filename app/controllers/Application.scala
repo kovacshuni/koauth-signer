@@ -1,7 +1,5 @@
 package controllers
 
-import java.util.{TimeZone, Calendar}
-
 import com.hunorkovacs.koauth.domain.OauthParams._
 import com.hunorkovacs.koauth.service.consumer.DefaultConsumerService.createRequestTokenRequest
 import play.api.mvc._
@@ -9,7 +7,7 @@ import play.api.data._
 import play.api.data.Forms._
 
 import scala.concurrent.Future
-import com.hunorkovacs.koauth.domain.Request
+import com.hunorkovacs.koauth.domain.KoauthRequest
 
 object Application extends Controller {
 
@@ -18,43 +16,30 @@ object Application extends Controller {
   val Method = "POST"
 
   def requestToken = Action.async { request =>
-    Future {
-      val emptyRequest = Request("", "", List.empty, List.empty, List.empty, Map.empty)
-      Ok(views.html.requestToken(requestTokenForm)(""))
-    }
+    Future(Ok(views.html.requestToken(requestTokenForm)("", "")))
   }
 
   def requestTokenPost = Action.async { implicit request =>
-    val complementedRequestF = Future(requestTokenForm.bindFromRequest.get).map(complementRequest)
-    val complementedFormF = complementedRequestF.map(requestTokenForm.fill)
-    for {
-      complementedRequest <- complementedRequestF
-      complementedForm <- complementedFormF
-      consumerKey = complementedRequest.oauthParamsMap(consumerKeyName)
-      consumerSecret = complementedRequest.oauthParamsMap(consumerSecretName)
-      callback = complementedRequest.oauthParamsMap(callbackName)
-      header <- createRequestTokenRequest(complementedRequest, consumerKey, consumerSecret, callback)
-      // but it should give back:
-      // Complemented Request
-      // SigantureBase
-      // Header but that is in Request
-      // Signature but that is also in Request, and in header
-
-      // Why is the authorization call done via list instead of request. Make it uniform.
-      //
-    } yield Ok(views.html.requestToken(complementedForm)(header))
+    Future(filterRequest(requestTokenForm.bindFromRequest.get)) flatMap { filteredRequest =>
+      val consumerKey = filteredRequest.oauthParamsMap(consumerKeyName)
+      val consumerSecret = filteredRequest.oauthParamsMap(consumerSecretName)
+      val callback = filteredRequest.oauthParamsMap(callbackName)
+      createRequestTokenRequest(filteredRequest, consumerKey, consumerSecret, callback)
+    } map { requestAndInfo =>
+      val completedForm = requestTokenForm.fill(requestAndInfo.request)
+      Ok(views.html.requestToken(completedForm)(requestAndInfo.signatureBase, requestAndInfo.header))
+    }
   }
 
-  private def complementRequest(request: Request) = {
+  private def filterRequest(request: KoauthRequest) = {
     val newMap = request.oauthParamsMap.filterNot(p => signatureMethodName == p._1 ||
       timestampName == p._1 ||
       nonceName == p._1 ||
       versionName == p._1)
-    Request(Method, request.urlWithoutParams, List.empty,
-      List.empty, newMap.toList, newMap)
+    new KoauthRequest(Method, request.urlWithoutParams, List.empty, List.empty, newMap.toList)
   }
 
-  val requestTokenForm = Form[Request](
+  val requestTokenForm = Form[KoauthRequest](
     mapping(
       "method" -> text,
       "url" -> text,
@@ -69,7 +54,7 @@ object Application extends Controller {
   )
 
   private def from(method: String, url: String, consumerKey: String, consumerSecret: String, signatureMethod: String,
-                   timestamp: String, nonce: String, version: String, callback: String): Request = {
+                   timestamp: String, nonce: String, version: String, callback: String): KoauthRequest = {
     val list = List((consumerKeyName, consumerKey),
       (consumerSecretName, consumerSecret),
       (signatureMethodName, signatureMethod),
@@ -77,10 +62,10 @@ object Application extends Controller {
       (nonceName, nonce),
       (versionName, version),
       (callbackName, callback))
-    Request(method, url, List.empty, List.empty, list, list.toMap)
+    new KoauthRequest(method, url, List.empty, List.empty, list)
   }
 
-  private def to(request: Request): Option[(String, String, String, String, String, String, String, String, String)] = {
+  private def to(request: KoauthRequest): Option[(String, String, String, String, String, String, String, String, String)] = {
     Some(request.method,
       request.urlWithoutParams,
       request.oauthParamsMap(consumerKeyName),

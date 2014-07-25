@@ -1,41 +1,68 @@
-@(filledForm: Form[com.hunorkovacs.koauth.domain.Request])(header: String)
+@(filledForm: Form[com.hunorkovacs.koauth.domain.KoauthRequest])(signatureBase: String, header: String)
 
 @import com.hunorkovacs.koauth.domain.OauthParams._
-@import com.hunorkovacs.koauth.domain.Request
 @import views.html.helper
-@import controllers.Application.requestTokenForm
 
 <!DOCTYPE html>
 
 <html>
     <head>
         <title>Request Token</title>
+        <link rel="stylesheet" href="assets/stylesheets/main.css">
     </head>
     <body>
         @helper.form(action = routes.Application.requestTokenPost) {
-            @helper.input(filledForm("method")) { (id, name, value, args) =>
-                <input type="text" name="method" id="method" readonly @toHtmlArgs(args)>
-            }
-            @helper.inputText(filledForm("url"))
-            @helper.inputText(filledForm(consumerKeyName))
-            @helper.inputText(filledForm(consumerSecretName))
-            @helper.input(filledForm(signatureMethodName)) { (id, name, value, args) =>
-                <input type="text" name="@signatureMethodName" id="@signatureMethodName" readonly @toHtmlArgs(args)>
-            }
-            @helper.input(filledForm(timestampName)) { (id, name, value, args) =>
-                <input type="text" name="@timestampName" id="@timestampName" readonly @toHtmlArgs(args)>
-            }
-            @helper.input(filledForm(nonceName)) { (id, name, value, args) =>
-                <input type="text" name="@nonceName" id="@nonceName" readonly @toHtmlArgs(args)>
-            }
-            @helper.input(filledForm(versionName)) { (id, name, value, args) =>
-                <input type="text" name="@versionName" id="@versionName" readonly @toHtmlArgs(args)>
-            }
-            @helper.inputText(filledForm(callbackName))
-            @helper.input(filledForm("submit")) { (id, name, value, args) =>
-                <input type="submit" name="submit" id="submit" @toHtmlArgs(args)>
-            }
+            <table>
+                <tr>
+                    <td>Method:</td>
+                    <td><input type="text" name="method" value="@filledForm("method").value" readonly></td>
+                </tr>
+                <tr>
+                    <td>URL:</td>
+                    <td><input type="text" name="url" value="@filledForm("url").value"></td>
+                </tr>
+                <tr>
+                    <td>Consumer Key:</td>
+                    <td><input type="text" name="@consumerKeyName" value="@filledForm(consumerKeyName).value"></td>
+                </tr>
+                <tr>
+                    <td>Consumer Secret:</td>
+                    <td><input type="text" name="@consumerSecretName" value="@filledForm(consumerSecretName).value"></td>
+                </tr>
+                <tr>
+                    <td>Signature Method:</td>
+                    <td><input type="text" name="@signatureMethodName" value="@filledForm(signatureMethodName).value"
+                    readonly></td>
+                </tr>
+                <tr>
+                    <td>Signature Method:</td>
+                    <td><input type="text" name="@timestampName" value="@filledForm(timestampName).value" readonly></td>
+                </tr>
+                <tr>
+                    <td>Nonce:</td>
+                    <td><input type="text" name="@nonceName" value="@filledForm(nonceName).value" readonly></td>
+                </tr>
+                <tr>
+                    <td>Version:</td>
+                    <td><input type="text" name="@versionName" value="@filledForm(versionName).value" readonly></td>
+                </tr>
+                <tr>
+                    <td>Callback:</td>
+                    <td><input type="text" name="@callbackName" value="@filledForm(callbackName).value"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" name="submit"></td>
+                </tr>
+                <tr>
+                    <td>Signature Base:</td>
+                    <td class="console"><textarea readonly >@signatureBase</textarea></td>
+                </tr>
+                <tr>
+                    <td>Authorization Header:</td>
+                    <td class="console"><textarea readonly >@header</textarea></td>
+                </tr>
+            </table>
         }
-        <p>header: @header</p>
     </body>
 </html>
