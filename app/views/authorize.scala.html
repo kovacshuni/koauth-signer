@@ -1,0 +1,52 @@
+@(filledForm: Form[com.hunorkovacs.koauth.domain.KoauthRequest])(header: String)
+
+@import com.hunorkovacs.koauth.domain.OauthParams._
+@import views.html.helper
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Authorize</title>
+        <link rel="stylesheet" href="assets/stylesheets/main.css">
+    </head>
+    <body>
+        <h2>Create OAuth 1.0 'Authorize' request</h2>
+        @helper.form(action = routes.Application.authorizePost) {
+            <table>
+                <tr>
+                    <td>Method:</td>
+                    <td><input type="text" name="method" value="@filledForm("method").value" readonly></td>
+                </tr>
+                <tr>
+                    <td>URL:</td>
+                    <td><input type="text" name="url" value="@filledForm("url").value"></td>
+                </tr>
+                <tr>
+                    <td>Consumer Key:</td>
+                    <td><input type="text" name="@consumerKeyName" value="@filledForm(consumerKeyName).value"></td>
+                </tr>
+                <tr>
+                    <td>Request Token:</td>
+                    <td><input type="text" name="@tokenName" value="@filledForm(tokenName).value"></td>
+                </tr>
+                <tr>
+                    <td>Username:</td>
+                    <td><input type="text" name="@usernameName" value="@filledForm(usernameName).value"></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td><input type="password" name="@passwordName" value="@filledForm(passwordName).value"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" name="submit"></td>
+                </tr>
+                <tr>
+                    <td>Authorization Header:</td>
+                    <td class="console"><textarea readonly >@header</textarea></td>
+                </tr>
+            </table>
+        }
+    </body>
+</html>
