@@ -1,7 +1,6 @@
 package controllers
 
 import com.hunorkovacs.koauth.domain.OauthParams._
-import com.hunorkovacs.koauth.service.consumer.DefaultConsumerService
 import com.hunorkovacs.koauth.service.consumer.DefaultConsumerService.{createAuthorizeRequest, createRequestTokenRequest}
 import play.api.mvc._
 import play.api.data._
@@ -22,9 +21,9 @@ object Application extends Controller {
 
   def requestTokenPost = Action.async { implicit request =>
     Future(filterRequest(requestTokenForm.bindFromRequest.get)) flatMap { filteredRequest =>
-      val consumerKey = filteredRequest.oauthParamsMap(consumerKeyName)
-      val consumerSecret = filteredRequest.oauthParamsMap(consumerSecretName)
-      val callback = filteredRequest.oauthParamsMap(callbackName)
+      val consumerKey = filteredRequest.oauthParamsMap(ConsumerKeyName)
+      val consumerSecret = filteredRequest.oauthParamsMap(ConsumerSecretName)
+      val callback = filteredRequest.oauthParamsMap(CallbackName)
       createRequestTokenRequest(filteredRequest, consumerKey, consumerSecret, callback)
     } map { requestAndInfo =>
       val completedForm = requestTokenForm.fill(requestAndInfo.request)
@@ -38,11 +37,11 @@ object Application extends Controller {
 
   def authorizePost = Action.async { implicit request =>
     Future(authorizeForm.bindFromRequest.get) flatMap { koauthRequest =>
-      val consumerKey = koauthRequest.oauthParamsMap(consumerKeyName)
-      val token = koauthRequest.oauthParamsMap(tokenName)
-      val username = koauthRequest.oauthParamsMap(usernameName)
-      val password = koauthRequest.oauthParamsMap(passwordName)
-      val complementedRequest = new KoauthRequest(Method, koauthRequest.urlWithoutParams, List.empty, List.empty,
+      val consumerKey = koauthRequest.oauthParamsMap(ConsumerKeyName)
+      val token = koauthRequest.oauthParamsMap(TokenName)
+      val username = koauthRequest.oauthParamsMap(UsernameName)
+      val password = koauthRequest.oauthParamsMap(PasswordName)
+      val complementedRequest = KoauthRequest(Method, koauthRequest.urlWithoutParams, List.empty, List.empty,
         koauthRequest.oauthParamsList)
       createAuthorizeRequest(complementedRequest, consumerKey, token, username, password)
     } map { requestAndInfo =>
@@ -52,77 +51,77 @@ object Application extends Controller {
   }
 
   private def filterRequest(request: KoauthRequest) = {
-    val newMap = request.oauthParamsMap.filterNot(p => signatureMethodName == p._1 ||
-      timestampName == p._1 ||
-      nonceName == p._1 ||
-      versionName == p._1)
-    new KoauthRequest(Method, request.urlWithoutParams, List.empty, List.empty, newMap.toList)
+    val newMap = request.oauthParamsMap.filterNot(p => SignatureMethodName == p._1 ||
+      TimestampName == p._1 ||
+      NonceName == p._1 ||
+      VersionName == p._1)
+    KoauthRequest(Method, request.urlWithoutParams, List.empty, List.empty, newMap.toList)
   }
 
   val requestTokenForm = Form[KoauthRequest](
     mapping(
       "method" -> text,
       "url" -> text,
-      consumerKeyName -> text,
-      consumerSecretName -> text,
-      signatureMethodName -> text,
-      timestampName -> text,
-      nonceName -> text,
-      versionName -> text,
-      callbackName -> text
+      ConsumerKeyName -> text,
+      ConsumerSecretName -> text,
+      SignatureMethodName -> text,
+      TimestampName -> text,
+      NonceName -> text,
+      VersionName -> text,
+      CallbackName -> text
     )(fromRequestTokenForm)(toRequestTokenForm)
   )
 
   private def fromRequestTokenForm(method: String, url: String, consumerKey: String, consumerSecret: String, signatureMethod: String,
                    timestamp: String, nonce: String, version: String, callback: String): KoauthRequest = {
-    val list = List((consumerKeyName, consumerKey),
-      (consumerSecretName, consumerSecret),
-      (signatureMethodName, signatureMethod),
-      (timestampName, timestamp),
-      (nonceName, nonce),
-      (versionName, version),
-      (callbackName, callback))
-    new KoauthRequest(method, url, List.empty, List.empty, list)
+    val list = List((ConsumerKeyName, consumerKey),
+      (ConsumerSecretName, consumerSecret),
+      (SignatureMethodName, signatureMethod),
+      (TimestampName, timestamp),
+      (NonceName, nonce),
+      (VersionName, version),
+      (CallbackName, callback))
+    KoauthRequest(method, url, List.empty, List.empty, list)
   }
 
   private def toRequestTokenForm(request: KoauthRequest): Option[(String, String, String, String, String, String, String, String, String)] = {
     Some(request.method,
       request.urlWithoutParams,
-      request.oauthParamsMap(consumerKeyName),
-      request.oauthParamsMap(consumerSecretName),
-      request.oauthParamsMap(signatureMethodName),
-      request.oauthParamsMap(timestampName),
-      request.oauthParamsMap(nonceName),
-      request.oauthParamsMap(versionName),
-      request.oauthParamsMap(callbackName))
+      request.oauthParamsMap(ConsumerKeyName),
+      request.oauthParamsMap(ConsumerSecretName),
+      request.oauthParamsMap(SignatureMethodName),
+      request.oauthParamsMap(TimestampName),
+      request.oauthParamsMap(NonceName),
+      request.oauthParamsMap(VersionName),
+      request.oauthParamsMap(CallbackName))
   }
 
   val authorizeForm = Form[KoauthRequest](
     mapping(
       "method" -> text,
       "url" -> text,
-      consumerKeyName -> text,
-      tokenName -> text,
-      usernameName -> text,
-      passwordName -> text
+      ConsumerKeyName -> text,
+      TokenName -> text,
+      UsernameName -> text,
+      PasswordName -> text
     )(fromAuthorizeForm)(toAuthorizeForm)
   )
 
   private def fromAuthorizeForm(method: String, url: String, consumerKey: String, token: String, username: String,
                                 password: String): KoauthRequest = {
-    val list = List((consumerKeyName, consumerKey),
-      (tokenName, token),
-      (usernameName, username),
-      (passwordName, password))
-    new KoauthRequest(method, url, List.empty, List.empty, list)
+    val list = List((ConsumerKeyName, consumerKey),
+      (TokenName, token),
+      (UsernameName, username),
+      (PasswordName, password))
+    KoauthRequest(method, url, List.empty, List.empty, list)
   }
 
   private def toAuthorizeForm(request: KoauthRequest): Option[(String, String, String, String, String, String)] = {
     Some(request.method,
       request.urlWithoutParams,
-      request.oauthParamsMap(consumerKeyName),
-      request.oauthParamsMap(tokenName),
-      request.oauthParamsMap(usernameName),
-      request.oauthParamsMap(passwordName))
+      request.oauthParamsMap(ConsumerKeyName),
+      request.oauthParamsMap(TokenName),
+      request.oauthParamsMap(UsernameName),
+      request.oauthParamsMap(PasswordName))
   }
 }
