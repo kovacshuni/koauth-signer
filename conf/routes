@@ -3,11 +3,17 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.requestToken
-GET     /request-token              controllers.Application.requestToken
+GET     /                           controllers.Application.requestTokenGet
+GET     /request-token              controllers.Application.requestTokenGet
 POST    /request-token              controllers.Application.requestTokenPost
-GET     /authorize                  controllers.Application.authorize
+GET     /authorize                  controllers.Application.authorizeGet
 POST    /authorize                  controllers.Application.authorizePost
+GET     /access-token               controllers.Application.accessTokenGet
+POST    /access-token               controllers.Application.accessTokenPost
+GET     /oauthenticate              controllers.Application.oauthenticateGet
+POST    /oauthenticate              controllers.Application.oauthenticatePost
+GET     /general                    controllers.Application.generalRequestGet
+POST    /general                    controllers.Application.generalRequestPost
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

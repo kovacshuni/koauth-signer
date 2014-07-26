@@ -1,0 +1,70 @@
+@(filledForm: Form[com.hunorkovacs.koauth.domain.KoauthRequest])(signatureBase: String, header: String)
+
+@import com.hunorkovacs.koauth.domain.OauthParams._
+@import views.html.helper
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Request Token</title>
+        <link rel="stylesheet" href="assets/stylesheets/main.css">
+    </head>
+    <body>
+        <h2>Complement and sign an OAuth 1.0 'Request Token' request</h2>
+        @helper.form(action = routes.Application.requestTokenPost) {
+            <table>
+                <tr>
+                    <td>Method:</td>
+                    <td><input type="text" name="method" value="@filledForm("method").value" readonly></td>
+                </tr>
+                <tr>
+                    <td>URL:</td>
+                    <td><input type="text" name="url" value="@filledForm("url").value"></td>
+                </tr>
+                <tr>
+                    <td>Consumer Key:</td>
+                    <td><input type="text" name="@ConsumerKeyName" value="@filledForm(ConsumerKeyName).value"></td>
+                </tr>
+                <tr>
+                    <td>Consumer Secret:</td>
+                    <td><input type="text" name="@ConsumerSecretName" value="@filledForm(ConsumerSecretName)
+                    .value"></td>
+                </tr>
+                <tr>
+                    <td>Signature Method:</td>
+                    <td><input type="text" name="@SignatureMethodName" value="@filledForm(SignatureMethodName).value"
+                    readonly></td>
+                </tr>
+                <tr>
+                    <td>Timestamp:</td>
+                    <td><input type="text" name="@TimestampName" value="@filledForm(TimestampName).value" readonly></td>
+                </tr>
+                <tr>
+                    <td>Nonce:</td>
+                    <td><input type="text" name="@NonceName" value="@filledForm(NonceName).value" readonly></td>
+                </tr>
+                <tr>
+                    <td>Version:</td>
+                    <td><input type="text" name="@VersionName" value="@filledForm(VersionName).value" readonly></td>
+                </tr>
+                <tr>
+                    <td>Callback:</td>
+                    <td><input type="text" name="@CallbackName" value="@filledForm(CallbackName).value"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" name="submit"></td>
+                </tr>
+                <tr>
+                    <td>Signature Base:</td>
+                    <td class="console"><textarea readonly >@signatureBase</textarea></td>
+                </tr>
+                <tr>
+                    <td>Authorization Header:</td>
+                    <td class="console"><textarea readonly >@header</textarea></td>
+                </tr>
+            </table>
+        }
+    </body>
+</html>
