@@ -7,12 +7,13 @@
 
 <html>
     <head>
-        <title>Request Token</title>
+        <title>Accessing Protected Resources</title>
         <link rel="stylesheet" href="assets/stylesheets/main.css">
     </head>
     <body>
-        <h2>Complement and sign an OAuth 1.0 'Request Token' request</h2>
-        @helper.form(action = routes.Application.requestTokenPost) {
+        <h2>Complement and sign an OAuth 1.0 request for accessing protected resources</h2>
+        <p>(the most frequently used one)</p>
+        @helper.form(action = routes.Application.oauthenticatePost) {
             <table>
                 <tr>
                     <td>Method:</td>
@@ -28,8 +29,15 @@
                 </tr>
                 <tr>
                     <td>Consumer Secret:</td>
-                    <td><input type="text" name="@ConsumerSecretName" value="@filledForm(ConsumerSecretName)
-                    .value"></td>
+                    <td><input type="text" name="@ConsumerSecretName" value="@filledForm(ConsumerSecretName).value"></td>
+                </tr>
+                <tr>
+                    <td>Token:</td>
+                    <td><input type="text" name="@TokenName" value="@filledForm(TokenName).value"></td>
+                </tr>
+                <tr>
+                    <td>Token Secret:</td>
+                    <td><input type="text" name="@TokenSecretName" value="@filledForm(TokenSecretName).value"></td>
                 </tr>
                 <tr>
                     <td>Signature Method:</td>
@@ -47,10 +55,6 @@
                 <tr>
                     <td>Version:</td>
                     <td><input type="text" name="@VersionName" value="@filledForm(VersionName).value" readonly></td>
-                </tr>
-                <tr>
-                    <td>Callback:</td>
-                    <td><input type="text" name="@CallbackName" value="@filledForm(CallbackName).value"></td>
                 </tr>
                 <tr>
                     <td></td>

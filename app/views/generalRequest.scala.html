@@ -2,21 +2,22 @@
 
 @import com.hunorkovacs.koauth.domain.OauthParams._
 @import views.html.helper
+@import controllers.Application._
 
 <!DOCTYPE html>
 
 <html>
     <head>
-        <title>Request Token</title>
+        <title>Generic Request</title>
         <link rel="stylesheet" href="assets/stylesheets/main.css">
     </head>
     <body>
-        <h2>Complement and sign an OAuth 1.0 'Request Token' request</h2>
-        @helper.form(action = routes.Application.requestTokenPost) {
+        <h2>Sign an OAuth 1.0 generic request</h2>
+        @helper.form(action = routes.Application.generalRequestPost) {
             <table>
                 <tr>
                     <td>Method:</td>
-                    <td><input type="text" name="method" value="@filledForm("method").value" readonly></td>
+                    <td><input type="text" name="method" value="@filledForm("method").value"></td>
                 </tr>
                 <tr>
                     <td>URL:</td>
@@ -28,29 +29,56 @@
                 </tr>
                 <tr>
                     <td>Consumer Secret:</td>
-                    <td><input type="text" name="@ConsumerSecretName" value="@filledForm(ConsumerSecretName)
-                    .value"></td>
+                    <td><input type="text" name="@ConsumerSecretName"
+                    value="@filledForm(ConsumerSecretName).value"></td>
+                </tr>
+                <tr>
+                    <td>Consumer Key:</td>
+                    <td><input type="text" name="@TokenName" value="@filledForm(TokenName).value"></td>
+                </tr>
+                <tr>
+                    <td>Consumer Secret:</td>
+                    <td><input type="text" name="@TokenSecretName" value="@filledForm(TokenSecretName).value"></td>
                 </tr>
                 <tr>
                     <td>Signature Method:</td>
-                    <td><input type="text" name="@SignatureMethodName" value="@filledForm(SignatureMethodName).value"
-                    readonly></td>
+                    <td><input type="text" name="@SignatureMethodName" value="@filledForm(SignatureMethodName).value"></td>
                 </tr>
                 <tr>
                     <td>Timestamp:</td>
-                    <td><input type="text" name="@TimestampName" value="@filledForm(TimestampName).value" readonly></td>
+                    <td><input type="text" name="@TimestampName" value="@filledForm(TimestampName).value"></td>
                 </tr>
                 <tr>
                     <td>Nonce:</td>
-                    <td><input type="text" name="@NonceName" value="@filledForm(NonceName).value" readonly></td>
+                    <td><input type="text" name="@NonceName" value="@filledForm(NonceName).value"></td>
                 </tr>
                 <tr>
                     <td>Version:</td>
-                    <td><input type="text" name="@VersionName" value="@filledForm(VersionName).value" readonly></td>
+                    <td><input type="text" name="@VersionName" value="@filledForm(VersionName).value"></td>
                 </tr>
                 <tr>
                     <td>Callback:</td>
                     <td><input type="text" name="@CallbackName" value="@filledForm(CallbackName).value"></td>
+                </tr>
+                <tr>
+                    <td>Verifier:</td>
+                    <td><input type="text" name="@VerifierName" value="@filledForm(VerifierName).value"></td>
+                </tr>
+                <tr>
+                    <td>HTTP POST body param 1 name:</td>
+                    <td>HTTP POST body param 1 value:</td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="@PostParamName1" value="@filledForm(PostParamName1).value"></td>
+                    <td><input type="text" name="@PostParamVal1" value="@filledForm(PostParamVal1).value"></td>
+                </tr>
+                <tr>
+                    <td>HTTP POST body param 2 name:</td>
+                    <td>HTTP POST body param 2 value:</td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="@PostParamName2" value="@filledForm(PostParamName2).value"></td>
+                    <td><input type="text" name="@PostParamVal2" value="@filledForm(PostParamVal2).value"></td>
                 </tr>
                 <tr>
                     <td></td>
