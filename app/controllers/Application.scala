@@ -15,13 +15,13 @@ object Application extends Controller {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val Method = "POST"
+  val Post = "POST"
 
   def requestTokenGet =
-    get(emptyEmptyRequesToken, requestTokenForm, views.html.requestToken.apply)
+    get(emptyEmptyRequesToken, requestTokenForm, views.html.requestToken.apply, StrictlyPost())
 
   def requestTokenPost =
-    post(createRequestToken, requestTokenForm, views.html.requestToken.apply)
+    post(createRequestToken, requestTokenForm, views.html.requestToken.apply, StrictlyPost())
 
   private def emptyEmptyRequesToken(emptyRequest: KoauthRequest) =
     createRequestTokenRequest(emptyRequest, "", "", "")
@@ -34,10 +34,10 @@ object Application extends Controller {
   }
 
   def authorizeGet =
-    get(createEmptyAuthorize, authorizeForm, views.html.authorize.apply)
+    get(createEmptyAuthorize, authorizeForm, views.html.authorize.apply, StrictlyPost())
 
   def authorizePost =
-    post(createAuthorize, authorizeForm, views.html.authorize.apply)
+    post(createAuthorize, authorizeForm, views.html.authorize.apply, StrictlyPost())
 
   private def createEmptyAuthorize(emptyRequest: KoauthRequest) =
     createAuthorizeRequest(emptyRequest, "", "", "", "", "", "")
@@ -53,10 +53,10 @@ object Application extends Controller {
   }
 
   def accessTokenGet =
-    get(createEmptyAccessToken, accessTokenForm, views.html.accessToken.apply)
+    get(createEmptyAccessToken, accessTokenForm, views.html.accessToken.apply, StrictlyPost())
 
   def accessTokenPost =
-    post(createAccessToken, accessTokenForm, views.html.accessToken.apply)
+    post(createAccessToken, accessTokenForm, views.html.accessToken.apply, StrictlyPost())
 
   private def createEmptyAccessToken(emptyRequest: KoauthRequest) =
     createAccessTokenRequest(emptyRequest, "", "", "", "", "")
@@ -71,10 +71,10 @@ object Application extends Controller {
   }
 
   def oauthenticateGet =
-    get(createEmptyOauthenticate, oauthenticateForm, views.html.oauthenticate.apply)
+    get(createEmptyOauthenticate, oauthenticateForm, views.html.oauthenticate.apply, WhateverComes())
 
   def oauthenticatePost =
-    post(createOauthenticate, oauthenticateForm, views.html.oauthenticate.apply)
+    post(createOauthenticate, oauthenticateForm, views.html.oauthenticate.apply, WhateverComes())
 
   private def createEmptyOauthenticate(emptyRequest: KoauthRequest) =
     createOauthenticatedRequest(emptyRequest, "", "", "", "")
@@ -92,14 +92,15 @@ object Application extends Controller {
   }
 
   def generalRequestPost =
-    post(createGeneralSignedRequest, generalRequestForm, views.html.generalRequest.apply)
+    post(createGeneralSignedRequest, generalRequestForm, views.html.generalRequest.apply, WhateverComes())
 
   private type T = Form[KoauthRequest] => (String, String) => Appendable
 
   private def get(createEmptyRequest: KoauthRequest => Future[RequestWithInfo],
           form: Form[KoauthRequest],
-          view: T) = Action.async { request =>
-    Future(KoauthRequest(Method, "", List.empty, List.empty, List.empty))
+          view: T,
+          method: MethodToFill) = Action.async { request =>
+    Future(KoauthRequest(method.get, "", List.empty, List.empty, List.empty))
       .flatMap(createEmptyRequest)
       .map { requestAndInfo =>
       val filledForm = form.fill(requestAndInfo.request)
@@ -109,9 +110,10 @@ object Application extends Controller {
 
   private def post(createRequest: KoauthRequest => Future[RequestWithInfo],
                    form: Form[KoauthRequest],
-                   view: T) = {
+                   view: T,
+                   method: MethodToFill) = {
     Action.async { implicit request =>
-      Future(filterRequest(form.bindFromRequest.get))
+      Future(filterRequest(form.bindFromRequest.get, method))
         .flatMap(createRequest)
         .map { requestAndInfo =>
         val completedForm = form.fill(requestAndInfo.request)
@@ -120,11 +122,29 @@ object Application extends Controller {
     }
   }
 
-  private def filterRequest(request: KoauthRequest) = {
+  private def filterRequest(request: KoauthRequest, method: MethodToFill) = {
     val newMap = request.oauthParamsMap.filterNot(p => SignatureMethodName == p._1 ||
       TimestampName == p._1 ||
       NonceName == p._1 ||
       VersionName == p._1)
-    KoauthRequest(Method, request.urlWithoutParams, List.empty, List.empty, newMap.toList)
+    KoauthRequest(method.get(request), request.urlWithoutParams, List.empty, List.empty, newMap.toList)
   }
+
+  private trait MethodToFill {
+    def get(request: KoauthRequest) = {
+      this match {
+        case StrictlyPost() => Post
+        case WhateverComes() => request.method
+      }
+    }
+
+    def get() = {
+      this match {
+        case StrictlyPost() => Post
+        case WhateverComes() => ""
+      }
+    }
+  }
+  private case class StrictlyPost() extends MethodToFill
+  private case class WhateverComes() extends MethodToFill
 }
