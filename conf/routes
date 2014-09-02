@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.requestTokenGet
+GET     /                           controllers.Application.index
 GET     /request-token              controllers.Application.requestTokenGet
 POST    /request-token              controllers.Application.requestTokenPost
 GET     /authorize                  controllers.Application.authorizeGet

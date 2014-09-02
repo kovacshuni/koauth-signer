@@ -1,8 +1,7 @@
 package controllers
 
 import com.hunorkovacs.koauth.domain.OauthParams._
-import com.hunorkovacs.koauth.service.consumer.DefaultConsumerService._
-import com.hunorkovacs.koauth.service.consumer.RequestWithInfo
+import com.hunorkovacs.koauth.service.consumer.{DefaultConsumerService, RequestWithInfo}
 import form.Forms._
 import play.api.data.Form
 import play.api.mvc._
@@ -13,9 +12,13 @@ import com.hunorkovacs.koauth.domain.KoauthRequest
 
 object Application extends Controller {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
+  private val Post = "POST"
 
-  val Post = "POST"
+  private implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
+  private val consumer = new DefaultConsumerService(ec)
+  import consumer._
+
+  def index = Action.async(_ => Future(Ok(views.html.index())))
 
   def requestTokenGet =
     get(emptyEmptyRequesToken, requestTokenForm, views.html.requestToken.apply, StrictlyPost())
