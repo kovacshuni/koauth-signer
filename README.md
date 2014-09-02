@@ -8,11 +8,11 @@ specifications.
 1. Clone this repository: `git clone https://github.com/kovacshuni/koauth-signer.git`
 2. Run with sbt: `sbt run`
 3. Open in browser: [http://localhost:9000](http://localhost:9000)
-..* [Request Token Request](http://localhost:9000/request-token)
-..* [Authorize Request Token Request](http://localhost:9000/authorize)
-..* [Acquire Access Token Request](http://localhost:9000/access-token)
-..* [Sign basic request. Accessing protected resources](http://localhost:9000/oauthenticate)
-..* [Sign general request (without any restrictions)](http://localhost:9000/general)
+  * [Request Token Request](http://localhost:9000/request-token)
+  * [Authorize Request Token Request](http://localhost:9000/authorize)
+  * [Acquire Access Token Request](http://localhost:9000/access-token)
+  * [Sign basic request. Accessing protected resources](http://localhost:9000/oauthenticate)
+  * [Sign general request (without any restrictions)](http://localhost:9000/general)
 
 ## Owner
 
